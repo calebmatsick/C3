@@ -1,20 +1,30 @@
 package main
 
 import (
-	"encoding/gob"
+	"bufio"
+	// "encoding/gob"
 	"fmt"
 	"net"
+	"os"
+	"strings"
 )
 
+/*
 type P struct {
 	M, N int64
 }
+*/
 
 func handleConnection(conn net.Conn) {
-	dec := gob.NewDecoder(conn)
-	p := &P{}
-	dec.Decode(p)
-	fmt.Printf("Recieved : %+v", p)
+
+	reader := bufio.NewReader(os.Stdin)
+	//var cmd string
+	fmt.Printf("[shell]: ")
+	cmd, _ := reader.ReadString('\n')
+	cmd = strings.TrimSuffix(cmd, "\n")
+	//encoder := gob.NewEncoder(conn)
+	//encoder.Encode(cmd)
+	fmt.Fprintf(conn, cmd)
 	conn.Close()
 }
 
