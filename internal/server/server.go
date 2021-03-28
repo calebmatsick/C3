@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
-	//"strings"
+	"strings"
 )
 
 /*
@@ -18,19 +18,27 @@ type P struct {
 func handleConnection(conn net.Conn) {
 	for {
 		fmt.Printf("[shell]: ")
-	reader := bufio.NewReader(os.Stdin)
-	//var cmd string
+		reader := bufio.NewReader(os.Stdin)
 
-	cmd, _ := reader.ReadString('\n')
-	//encoder := gob.NewEncoder(conn)
-	//encoder.Encode(cmd)
-	fmt.Fprintf(conn, cmd)
-	//conn.Close()
+		cmd, _ := reader.ReadString('\n')
+
+		fmt.Printf(cmd)
+		cmd = strings.TrimSuffix(cmd, "\n")
+		fmt.Printf(cmd)
+		if (cmd == "exit") {
+			break
+		}
+		cmd = cmd + "\n"
+		//encoder := gob.NewEncoder(conn)
+		//encoder.Encode(cmd)
+
+		fmt.Fprintf(conn, cmd)
+
+		result, _ := bufio.NewReader(conn).ReadString('\n')
+		fmt.Println(string(result))
 	}
-	//result, _ := bufio.NewReader(conn).ReadString('\n')
-	//fmt.Println(string(result))
-	
-	//conn.Close()
+
+	conn.Close()
 }
 
 func main() {

