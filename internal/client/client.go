@@ -32,9 +32,9 @@ func main() {
 		if strings.Compare(cmd, "sysinfo") == 0 {
 			var osType string
 			if runtime.GOOS == "windows" {
-				osType = "windows"
+				osType = "The client OS is windows"
 			} else {
-				osType = "unix"
+				osType = "The client OS is Unix based"
 			}
 			fmt.Fprintf(conn, osType)
 
