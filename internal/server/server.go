@@ -2,18 +2,12 @@ package main
 
 import (
 	"bufio"
-	// "encoding/gob"
 	"fmt"
 	"net"
 	"os"
 	"strings"
 )
 
-/*
-type P struct {
-	M, N int64
-}
-*/
 
 func handleConnection(conn net.Conn) {
 	for {
@@ -26,9 +20,6 @@ func handleConnection(conn net.Conn) {
 			fmt.Fprintf(conn, cmd)
 			break
 		}
-
-		//encoder := gob.NewEncoder(conn)
-		//encoder.Encode(cmd)
 
 		fmt.Fprintf(conn, cmd)
 
@@ -45,7 +36,7 @@ func main() {
 	ln, err := net.Listen("tcp", ":8080")
 
 	if err != nil {
-		// handle error
+		fmt.Println("Cannot listen on given port")
 	}
 
 	for {
