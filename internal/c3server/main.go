@@ -1,6 +1,7 @@
 package main
 
 import (
+	// Standard
 	"bufio"
 	"fmt"
 	"net"
@@ -46,7 +47,7 @@ func sysinfo(conn net.Conn) {
 
 
 func handleConnection(conn net.Conn) {
-	fmt.Printf("C3: ")
+	fmt.Printf("[C3]: ")
 	reader := bufio.NewReader(os.Stdin)
 
 	switch {
