@@ -2,9 +2,10 @@ package main
 
 import (
 	// Standard
-	"bufio"
-	"strings"
+	//"bufio"
+	//"strings"
 	"fmt"
+	"encoding/gob"
 	"log"
 	"net"
 	"os/exec"
@@ -21,12 +22,15 @@ func main() {
 	}
 
 	cmd := ""
+	dec := gob.NewDecoder(conn)
 
 	for cmd != "close" {
 
-		cmd, _ = bufio.NewReader(conn).ReadString('\n')
-		cmd = strings.TrimSuffix(cmd, "\n")
-		cmd = strings.TrimSuffix(cmd, "\n")
+		//cmd, _ = bufio.NewReader(conn).ReadString('\n')
+
+		dec.Decode(cmd)
+		//cmd = strings.TrimSuffix(cmd, "\n")
+		//cmd = strings.TrimSuffix(cmd, "\n")
 			
 	
 		switch {

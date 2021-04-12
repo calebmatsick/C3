@@ -4,6 +4,7 @@ import (
 	// Standard
 	"bufio"
 	"fmt"
+	"encoding/gob"
 	"net"
 	"os"
 	"strings"
@@ -13,16 +14,16 @@ import (
 func shell(conn net.Conn) {
 	for {
 		fmt.Printf("[shell]: ")
-		reader := bufio.NewReader(os.Stdin)
-
-		cmd, _ := reader.ReadString('\n')
+		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 
 		if strings.Compare(cmd, "close\n") == 0 {
 			fmt.Fprintf(conn, cmd)
 			break
 		}
 
-		fmt.Fprintf(conn, cmd)
+		enc := gob.NewEncoder(conn)
+		enc.Encode(cmd)
+		// fmt.Fprintf(conn, cmd)
 
 		result, _ := bufio.NewReader(conn).ReadString('\n')
 		fmt.Println(string(result))
