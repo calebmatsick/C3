@@ -3,7 +3,7 @@ package main
 import (
 	// Standard
 	//"bufio"
-	//"strings"
+	"strings"
 	"fmt"
 	"encoding/gob"
 	"log"
@@ -28,9 +28,8 @@ func main() {
 
 		//cmd, _ = bufio.NewReader(conn).ReadString('\n')
 
-		dec.Decode(cmd)
-		//cmd = strings.TrimSuffix(cmd, "\n")
-		//cmd = strings.TrimSuffix(cmd, "\n")
+		dec.Decode(&cmd)
+		cmd = strings.TrimSuffix(cmd, "\n")
 			
 	
 		switch {

