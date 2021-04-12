@@ -8,12 +8,15 @@ import (
 	"net"
 	"os"
 	"strings"
+
+	// C3
+	"github.com/calebmatsick/C3/pkg/color"
 )
 
 
 func shell(conn net.Conn) {
 	for {
-		fmt.Printf("[shell]: ")
+		fmt.Printf(color.Green + "[shell]: " + color.Reset)
 		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 
 		if strings.Compare(cmd, "close\n") == 0 {
@@ -49,7 +52,7 @@ func sysinfo(conn net.Conn) {
 
 func handleConnection(conn net.Conn) {
 	for {
-		fmt.Printf("[C3]: ")
+		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
 		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		reader = strings.TrimSuffix(reader, "\n")
 
