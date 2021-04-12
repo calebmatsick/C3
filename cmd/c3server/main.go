@@ -36,9 +36,14 @@ func shell(conn net.Conn) {
 
 
 func sysinfo(conn net.Conn) {
-	fmt.Fprintf(conn, "sysinfo")
+	enc := gob.NewEncoder(conn)
+	dec := gob.NewDecoder(conn)
 
-	result, _ := bufio.NewReader(conn).ReadString('\n')
+	enc.Encode("sysinfo")
+
+	result := ""
+	dec.Decode(&result)
+
 	switch {
 	case result == "windows":
 		fmt.Println("The system is running Windows")
