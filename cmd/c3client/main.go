@@ -21,13 +21,14 @@ func main() {
 		enc.Encode(err)
 	}
 
-	for cmd != "close" {
+	for {
 
 		dec.Decode(&cmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
 	
 		switch {
 		case cmd == "close":
+			continue
 		case cmd == "exit":
 			break
 		case cmd == "sysinfo":

