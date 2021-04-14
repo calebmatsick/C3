@@ -21,7 +21,7 @@ func main() {
 		enc.Encode(err)
 	}
 
-	for {
+	cmdLoop:for {
 
 		dec.Decode(&cmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
@@ -30,7 +30,7 @@ func main() {
 		case cmd == "close":
 			continue
 		case cmd == "exit":
-			break
+			break cmdLoop
 		case cmd == "sysinfo":
 			osType := runtime.GOOS
 			enc.Encode(osType)

