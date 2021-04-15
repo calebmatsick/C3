@@ -1,3 +1,7 @@
+/*
+  Package for encrypting client-server traffic
+*/
+
 package security
 
 import (
@@ -9,7 +13,7 @@ import (
 	"io"
 )
 
-
+// Encrypts traffic, returns byte array
 func Encrypt(input string) []byte {
 	mes := []byte(input)
 	key := []byte("passphrasewhichneedstobe32bytes!")
@@ -38,6 +42,7 @@ func Encrypt(input string) []byte {
 }
 
 
+// Decrypts traffic, returns plaintext
 func Decrypt(ciphertext []byte) string {
 	key := []byte("passphrasewhichneedstobe32bytes!")
 
