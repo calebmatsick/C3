@@ -10,7 +10,7 @@ import (
 )
 
 
-func encrypt(input string) []byte {
+func Encrypt(input string) []byte {
 	mes := []byte(input)
 	key := []byte("passphrasewhichneedstobe32bytes!")
 
@@ -38,7 +38,7 @@ func encrypt(input string) []byte {
 }
 
 
-func decrypt(ciphertext []byte) string {
+func Decrypt(ciphertext []byte) string {
 	key := []byte("passphrasewhichneedstobe32bytes!")
 
 	c, err := aes.NewCipher(key)
