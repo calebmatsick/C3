@@ -38,8 +38,8 @@ func main() {
 			osType := runtime.GOOS
 			enc.Encode(osType)
 		default:
-			splitCmd := strings.Split(cmd, " ")
-			out, err := exec.Command(splitCmd[0]).Output()
+			cmdSlice := []string{cmd}
+			out, err := exec.Command(cmdSlice[0], cmdSplice[1:]).Output()
 		
 			if err != nil {
 				enc.Encode(err)
