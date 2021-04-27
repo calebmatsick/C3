@@ -8,15 +8,29 @@ import (
 	// Standard
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/rand"
+	crand "crypto/rand"
 	"fmt"
 	"io"
+	mrand "math/rand"
+	"time"
+)
+
+const (
+	seedString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	letterIdxBits = 6
+	letterIdxMask = 1<<letterIdxBits - 1
+	letterIdxMax = 63 /letterIdxBits
+	keyLength = 32
+)
+
+var (
+	src = mrand.NewSource(time.Now().UnixNano())
 )
 
 // Encrypts traffic, returns byte array
 func Encrypt(input string) []byte {
 	mes := []byte(input)
-	key := []byte("passphrasewhichneedstobe32bytes!")
+	key := randKey()
 
 	c, err := aes.NewCipher(key)
 
@@ -32,7 +46,7 @@ func Encrypt(input string) []byte {
 
 	nonce := make([]byte, gcm.NonceSize())
 
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+	if _, err = io.ReadFull(crand.Reader, nonce); err != nil {
 		fmt.Println(err)
 	}
 
@@ -70,4 +84,22 @@ func Decrypt(ciphertext []byte) string {
 	}
 
 	return string(decCmd)
+}
+
+
+// Generate random key
+func randKey() []byte {
+	b := make([]byte, keyLength)
+	for i, cache, remain := keyLength-1, src.Int63(), letterIdxMax; i >= 0; {
+		if remain == 0 {
+			cache, remain = src.Int63(), letterIdxMax
+		}
+		if idx := int(cache & letterIdxMask); idx < len(seedString) {
+			b[i] = seedString[idx]
+			i--
+		}
+		cache >>= letterIdxBits
+		remain--
+	}
+	return b
 }
