@@ -39,7 +39,7 @@ func main() {
 			enc.Encode(osType)
 		default:
 			cmdSlice := []string{cmd}
-			out, err := exec.Command(cmdSlice[0], cmdSplice[1:]).Output()
+			out, err := exec.Command(cmdSlice[0], cmdSlice[1:]).Output()
 		
 			if err != nil {
 				enc.Encode(err)
