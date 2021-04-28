@@ -25,12 +25,12 @@ const (
 
 var (
 	src = mrand.NewSource(time.Now().UnixNano())
+	key = randKey(keyLength)
 )
 
 // Encrypts traffic, returns byte array
 func Encrypt(input string) []byte {
 	mes := []byte(input)
-	key := randKey()
 
 	c, err := aes.NewCipher(key)
 
@@ -58,8 +58,6 @@ func Encrypt(input string) []byte {
 
 // Decrypts traffic, returns plaintext
 func Decrypt(ciphertext []byte) string {
-	key := []byte("passphrasewhichneedstobe32bytes!")
-
 	c, err := aes.NewCipher(key)
 
 	if err != nil {
@@ -88,7 +86,7 @@ func Decrypt(ciphertext []byte) string {
 
 
 // Generate random key
-func randKey() []byte {
+func randKey(keyLength int) []byte {
 	b := make([]byte, keyLength)
 	for i, cache, remain := keyLength-1, src.Int63(), letterIdxMax; i >= 0; {
 		if remain == 0 {
