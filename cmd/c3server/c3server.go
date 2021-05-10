@@ -12,6 +12,7 @@ import (
 	// C3
 	"github.com/calebmatsick/C3/pkg/color"
 	"github.com/calebmatsick/C3/pkg/security"
+	"github.com/calebmatsick/C3/pkg/transfer"
 )
 
 
@@ -70,6 +71,15 @@ func exit(conn net.Conn) {
 }
 
 
+func upload(conn net.Conn) {
+	fmt.Println("Specify the path and file you would like to upload")
+	filePath, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+
+	transfer.SendFile(conn, filePath)
+	fmt.Println("File has been sent")
+}
+
+
 func handleConnection(conn net.Conn) {
 	connLoop:for {
 		fmt.Printf(color.Blue + "[C3]: " + color.Reset)
@@ -86,6 +96,10 @@ func handleConnection(conn net.Conn) {
 			shell(conn)
 		case c3cmd == "sysinfo":
 			sysinfo(conn)
+		case c3cmd == "upload":
+			upload(conn)
+		case c3cmd == "download":
+			download(conn)
 		default:
 			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Invalid command")
 		}
