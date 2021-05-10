@@ -71,6 +71,15 @@ func exit(conn net.Conn) {
 }
 
 
+func download(conn net.Conn) {
+	fmt.Println("Specify the path and file you would like to download")
+	filePath, _ := bufio.NewReader(os.Stdin).ReadString('\n')
+
+	transfer.RecieveFile(conn, filePath)
+	fmt.Println("File has been downloaded")
+}
+
+
 func upload(conn net.Conn) {
 	fmt.Println("Specify the path and file you would like to upload")
 	filePath, _ := bufio.NewReader(os.Stdin).ReadString('\n')
