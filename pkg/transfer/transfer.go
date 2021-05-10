@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"strings"
 
 	// C3
 	"github.com/calebmatsick/C3/pkg/security"
@@ -67,15 +68,29 @@ func sendFile(conn net.Conn, givenFile string) {
 
 func recieveFile(conn net.Conn) {
 	dec := gob.NewDecoder(conn)
-	fileName :=
-	fileSize :=
+
+	bufferFileName := make([]byte, 64)
+	bufferFileSize := make([]byte, 10)
+
+	fileSize, _ := strconv.ParseInt(strings.Trim(string(bufferFileSize), ":"), 10, 64)
+	fileName:= strings.Trim(string(bufferFileName), ":")
+
+
+	newFile, err := os.Create(fileName)
+
+	if err != nil {
+		panic(err)
+	}
+
+	var recievedBytes int64
 
 	for {
 		if (fileSize - recievedBytes) < BUFFERSIZE {
 			io.CopyN(newFile, conn, (fileSize - recievedBytes))
-			dec.Decode(make([]byte, (reciveedBytes+BUFFERSIZE)))
+			dec.Decode(make([]byte, (recievedBytes+BUFFERSIZE)))
 			break
 		}
-		
+		io.CopyN(newFile, conn, BUFFERSIZE)
+		recievedBytes += BUFFERSIZE
 	}
 }
