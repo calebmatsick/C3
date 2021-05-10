@@ -31,7 +31,7 @@ func fillString(returnString string, toLength int) string {
 }
 
 
-func sendFile(conn net.Conn, givenFile string) {
+func SendFile(conn net.Conn, givenFile string) {
 	fmt.Println("")
 	enc := gob.NewEncoder(conn)
 	file, err := os.Open(givenFile)
@@ -66,7 +66,7 @@ func sendFile(conn net.Conn, givenFile string) {
 }
 
 
-func recieveFile(conn net.Conn) {
+func RecieveFile(conn net.Conn) {
 	dec := gob.NewDecoder(conn)
 
 	bufferFileName := make([]byte, 64)
