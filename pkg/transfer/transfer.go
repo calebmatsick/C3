@@ -41,10 +41,12 @@ func SendFile(conn net.Conn, givenFile string) {
 		return
 	}
 	fileInfo, err := file.Stat()
+
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	
 	fileSize := fillString(strconv.FormatInt(fileInfo.Size(), 10), 10)
 	fileName := fillString(fileInfo.Name(), 64)
 	fmt.Println("Sending filename and filesize!")
