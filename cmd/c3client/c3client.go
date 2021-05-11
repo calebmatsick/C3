@@ -49,7 +49,7 @@ func main() {
 			transfer.RecieveFile(conn)
 		default:
 			cmdSlice := []string{cmd}
-			out, err := exec.Command(cmdSlice[0], cmdSlice[1:]).Output()
+			out, err := exec.Command(cmdSlice[0], cmdSlice[1:]...).Output()
 		
 			if err != nil {
 				enc.Encode(err)
