@@ -37,7 +37,8 @@ func main() {
 			break cmdLoop
 		case cmd == "sysinfo":
 			osType := runtime.GOOS
-			enc.Encode(osType)
+			var encOSType = security.Encrypt(osType)
+			enc.Encode(encOSType)
 		case cmd == "download":
 			encFilePath := []byte("")
 

